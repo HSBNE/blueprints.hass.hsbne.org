@@ -1,0 +1,54 @@
+blueprint:
+  name: Dust Extractor Button Control
+  description: >
+    Automation for switching on and off the dust extractor switches based on
+    physical buttons.
+  domain: automation
+  input:
+    on_sensor:
+      name: On Button
+      description: The binary sensor to use for on state
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: true
+    off_sensor:
+      name: Off Button
+      description: The binary sensor to use for off state
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: true
+    switch:
+      name: Switch
+      description: The switch to control
+      selector:
+        entity:
+          domain: switch
+          multiple: false
+
+mode: queued
+
+trigger:
+  - platform: state
+    id: "on"
+    entity_id: !input on_sensor
+    to: "on"
+  - platform: state
+    id: "off"
+    entity_id: !input off_sensor
+    to: "off"
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "on"
+        sequence:
+          - service: switch.turn_on
+            entity_id: !input switch
+      - conditions:
+          - condition: trigger
+            id: "off"
+        sequence:
+          - service: switch.turn_off
+            entity_id: !input switch
