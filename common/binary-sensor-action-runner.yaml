@@ -1,0 +1,48 @@
+blueprint:
+  name: Binary Sensor Action Runner
+  description: >
+    Automation for running actions when binary sensors change state from off to
+    on.
+  domain: automation
+  input:
+    binary_sensor:
+      name: Binary Sensor
+      description: The binary sensor to activate on.
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: false
+    actions_on:
+      name: Actions On
+      description: Actions to run when the binary sensor changes to an on state.
+      default: []
+      selector:
+        action: {}
+    actions_off:
+      name: Actions Off
+      description: Actions to run when the binary sensor changes to an off state.
+      default: []
+      selector:
+        action: {}
+mode: queued
+trigger:
+  - platform: state
+    id: "on"
+    to: "on"
+    entity_id: !input binary_sensor
+  - platform: state
+    id: "off"
+    to: "off"
+    entity_id: !input binary_sensor
+action:
+  - choose:
+    # Run actions when triggered by the binary sensor becoming on
+    - conditions:
+      - condition: trigger
+        id: "on"
+      sequence: !input actions_on
+    # Run actions when triggered by the binary sensor becoming off
+    - conditions:
+        - condition: trigger
+          id: "off"
+      sequence: !input actions_off
