@@ -28,10 +28,12 @@ mode: queued
 trigger:
   - platform: state
     id: "on"
+    from: "off"
     to: "on"
     entity_id: !input binary_sensor
   - platform: state
     id: "off"
+    from: "on"
     to: "off"
     entity_id: !input binary_sensor
 action:
